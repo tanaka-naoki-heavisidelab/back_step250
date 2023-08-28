@@ -15,9 +15,41 @@ services:
       - ${PORT_BACK}:${PORT_BACK}
     # expose:
     #   - ${PORT_BACK}
-    # depends_on:
-    #   - mysql
-
+    depends_on:
+      - mysql
+  
+  mysql:
+    build:
+      context:  ./mysql
+      args:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+    networks:
+      - step250_network
+    volumes:
+      - ./mysql/data/db:/var/lib/mysql/${MYSQL_DATABASE}
+    environment:
+      - TZ=Asia/Tokyo
+    env_file:
+      - .env
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD      
+      interval: 10s      
+      timeout: 10s      
+      retries: 3
+      start_period: 30s
+  
+  phpmyadmin:
+    image: phpmyadmin:5.1-apache
+    env_file:
+      - .env
+    links:
+      - mysql
+    networks:
+      - step250_network
+    ports:
+      - ${PORT_PMA}:80
+    volumes:
+        - ./phpmyadmin/sessions:/sessions
 
 networks:
   step250_network:
