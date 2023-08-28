@@ -4,3 +4,4 @@ __pycache__
 /mysql/data/
 /phpmyadmin/
 /alembic/versions/
+/nginx/log
