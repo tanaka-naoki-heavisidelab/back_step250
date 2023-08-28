@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  backendserver:
+    build: 
+      context: ./server
+      args:
+        - MY_UID=${MY_UID}
+        - MY_GID=${MY_GID}
+        - PORT_BACK=${PORT_BACK}
+    volumes:
+      - .:/home/appuser/devcon
+    networks:
+      - step250_network
+    ports:
+      - ${PORT_BACK}:${PORT_BACK}
+    # expose:
+    #   - ${PORT_BACK}
+    # depends_on:
+    #   - mysql
+
+
+networks:
+  step250_network:
