@@ -17,6 +17,9 @@ services:
     #   - ${PORT_BACK}
     depends_on:
       - mysql
+    command: ["/bin/sh", "-c", "/home/appuser/devcon/backend.sh"]
+  
+    
   
   mysql:
     build:

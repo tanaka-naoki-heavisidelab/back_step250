@@ -48,5 +48,5 @@ RUN mkdir /home/appuser/devcon
 # && chown appuser:appgroup /home/appuser/devcon
 #USER appuser
 WORKDIR /home/appuser/devcon
-ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["tail -f /dev/null"]
+#ENTRYPOINT ["/bin/sh", "-c"]
+#CMD ["tail -f /dev/null"]
