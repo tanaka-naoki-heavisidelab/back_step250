@@ -11,7 +11,9 @@ server = os.getenv("MYSQL_HOST")
 db = os.getenv("MYSQL_DATABASE")
 DATABASE_URL = f"mysql+pymysql://{user}:{password}@{server}/{db}"
 
+# echo=Trueは開発用。本番はFalse
 engine = create_engine(DATABASE_URL, echo=True)
+# sessionmakerは同期式。
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
