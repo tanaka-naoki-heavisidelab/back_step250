@@ -7,9 +7,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: str or None = None
-
-
-class TokenRequestForm(BaseModel):
-    email: str
-    password: str
+    username: str or None = None
