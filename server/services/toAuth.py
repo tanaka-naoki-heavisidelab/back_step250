@@ -34,8 +34,8 @@ def create_access_token(data: dict, expires_delta: timedelta or None = None):
     return encoded_jwt
 
 
-async def authenticate_user(username: str, password: str):
-    user = await get_user(username)
+async def authenticate_user(email: str, password: str):
+    user = await get_user(email)
     if not user:
         return False
     if not verify_password(password, user.password):
@@ -49,8 +49,8 @@ def verify_password(password, db_password):
     return pwd_context.verify(password, db_password)
 
 
-async def get_user(username: str):
-    query = select([UserModel]).where(UserModel.username == username)
+async def get_user(email: str):
+    query = select([UserModel]).where(UserModel.email == email)
     result = await database.fetch_one(query)
     return result
 
@@ -63,15 +63,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credential_exception
 
-        token_data = TokenData(username=username)
+        token_data = TokenData(email=email)
     except JWTError:
         raise credential_exception
 
-    user = await get_user(database, username=token_data.username)
+    user = await get_user(database, email=token_data.email)
     if user is None:
         raise credential_exception
     return user
