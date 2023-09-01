@@ -1,8 +1,13 @@
 import re
+from sqlalchemy import select
 from fastapi import APIRouter, Depends, HTTPException
 from server.schemas.user import User, UserPost, UserCreate
 from server.services.toUser import create, select_by_email
-from server.services.toAuth import get_pwd_context
+from server.services.toAuth import get_current_user, get_pwd_context
+from server.schemas.token import TokenData
+from server.schemas.common import UserRead
+from server.models.user import User as UserModel
+from server.db.database import database
 from passlib.context import CryptContext
 
 router = APIRouter()
@@ -36,3 +41,10 @@ async def create_user(
                 email=user.email, username=user.username, password=hashed_password
             )
             return await create(us)
+
+
+@router.get("/user", response_model=UserRead)
+async def get_user(current_user: TokenData = Depends(get_current_user)):
+    query = select([UserModel]).where(UserModel.id == current_user.id)
+    result = await database.fetch_one(query)
+    return result
