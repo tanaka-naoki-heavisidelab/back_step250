@@ -1,5 +1,77 @@
+import os
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
 from passlib.context import CryptContext
+from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status
+from sqlalchemy import select
+from server.schemas.token import TokenData
+from server.db.database import database
+from server.models.user import User as UserModel
+
+
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 # Dependの引数にするには関数型で渡す。インスタンスはエラーになる。
 def get_pwd_context():
     return CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def create_access_token(data: dict, expires_delta: timedelta or None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+async def authenticate_user(username: str, password: str):
+    user = await get_user(username)
+    if not user:
+        return False
+    if not verify_password(password, user.password):
+        return False
+
+    return user
+
+
+def verify_password(password, db_password):
+    pwd_context = get_pwd_context()
+    return pwd_context.verify(password, db_password)
+
+
+async def get_user(username: str):
+    query = select([UserModel]).where(UserModel.username == username)
+    result = await database.fetch_one(query)
+    return result
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credential_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credential_exception
+
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credential_exception
+
+    user = await get_user(database, username=token_data.username)
+    if user is None:
+        raise credential_exception
+    return user
