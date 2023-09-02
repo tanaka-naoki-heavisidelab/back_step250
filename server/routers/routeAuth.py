@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from server.schemas.token import Token
-from databases import Database
 from datetime import timedelta
-from server.db.database import database
 from server.services.toAuth import authenticate_user, create_access_token
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
