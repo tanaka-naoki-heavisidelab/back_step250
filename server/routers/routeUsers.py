@@ -37,10 +37,10 @@ async def create_user(
             raise HTTPException(status_code=409, detail="登録済みです")
         else:
             hashed_password = pwd_context.hash(user.password1)
-            us = UserCreate(
+            usercreate = UserCreate(
                 email=user.email, username=user.username, password=hashed_password
             )
-            return await create(us)
+            return await create(usercreate)
 
 
 @router.get("/user", response_model=UserRead)

@@ -5,6 +5,7 @@ from server.services.toAuth import get_pwd_context
 from server.routers import (
     routeUsers,
     routeAuth,
+    routeTask,
     #     routeS3upload,
     #     routeRecipes,
     #     routeRecipeSequences,
@@ -29,6 +30,7 @@ app.add_middleware(
 
 app.include_router(routeUsers.router)
 app.include_router(routeAuth.router)
+app.include_router(routeTask.router)
 # app.include_router(routeS3upload.router)
 # app.include_router(routeRecipes.router)
 # app.include_router(routeRecipeSequences.router)
