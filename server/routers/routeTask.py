@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-from pydantic import parse_obj_as
-from typing import List
-from server.schemas.common import TaskBase
+from server.schemas.common import TaskBase,UserRead
 from server.schemas.task import Task, TaskCreate, TaskRead
 from server.schemas.token import TokenData
+from server.schemas.usertasks import UserTasksResponse
 from server.services.toAuth import get_current_user
 from server.services.toTask import create
 from server.models.task import Task as TaskModel
@@ -27,8 +26,18 @@ async def create_task(
     return await create(taskcreate)
 
 
-@router.get("/task", response_model=List[TaskRead])
-async def get_task(current_user: TokenData = Depends(get_current_user)):
+@router.get("/usertasks", response_model=UserTasksResponse)
+async def get_usertasks(current_user: TokenData = Depends(get_current_user)):
+    # タスクを取得
     query = select([TaskModel]).where(TaskModel.user_id == current_user.id)
     results = await database.fetch_all(query)
-    return [parse_obj_as(TaskRead, dict(result)) for result in results]
+    tasks = [TaskRead(**dict(result)) for result in results]
+    
+    # ユーザー情報を取得
+    user_info = UserRead(id=current_user.id, username=current_user.username)
+    
+    # レスポンスを返す
+    return {
+        "user": user_info,
+        "tasks": tasks
+    }

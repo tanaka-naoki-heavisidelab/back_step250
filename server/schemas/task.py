@@ -12,6 +12,7 @@ class Task(TaskCreate):
 
 
 class TaskRead(TaskBase):
+    id:int
     created_at: PythonDateTime
     update_at: Optional[PythonDateTime]
-    user_id: int
+
