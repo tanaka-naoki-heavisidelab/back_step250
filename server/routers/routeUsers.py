@@ -45,6 +45,7 @@ async def create_user(
 
 @router.get("/user", response_model=UserRead)
 async def get_user(current_user: TokenData = Depends(get_current_user)):
+    # query = select([UserModel]).where(UserModel.id == current_user.id)
     query = select([UserModel]).where(UserModel.email == current_user.email)
     result = await database.fetch_one(query)
     return result

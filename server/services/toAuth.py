@@ -49,6 +49,12 @@ def verify_password(password, db_password):
     return pwd_context.verify(password, db_password)
 
 
+# async def get_user(username: str):
+#     query = select([UserModel]).where(UserModel.username == username)
+#     result = await database.fetch_one(query)
+#     return result
+
+
 async def get_user(email: str):
     query = select([UserModel]).where(UserModel.email == email)
     result = await database.fetch_one(query)
