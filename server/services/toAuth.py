@@ -34,6 +34,16 @@ def create_access_token(data: dict, expires_delta: timedelta or None = None):
     return encoded_jwt
 
 
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
+
 async def authenticate_user(username: str, password: str):
     user = await get_user(username)
     if not user:
@@ -47,12 +57,6 @@ async def authenticate_user(username: str, password: str):
 def verify_password(password, db_password):
     pwd_context = get_pwd_context()
     return pwd_context.verify(password, db_password)
-
-
-# async def get_user(username: str):
-#     query = select([UserModel]).where(UserModel.username == username)
-#     result = await database.fetch_one(query)
-#     return result
 
 
 async def get_user(email: str):
