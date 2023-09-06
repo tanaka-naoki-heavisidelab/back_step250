@@ -5,6 +5,7 @@ from typing import Optional
 
 class TaskCreate(TaskBase):
     user_id: int
+    is_deleted: bool
 
 
 class Task(TaskCreate):
@@ -12,7 +13,7 @@ class Task(TaskCreate):
 
 
 class TaskRead(TaskBase):
-    id:int
+    id: int
     created_at: PythonDateTime
     update_at: Optional[PythonDateTime]
-
+    is_deleted: bool

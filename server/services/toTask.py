@@ -9,6 +9,7 @@ async def create(task: TaskCreate):
         detail=task.detail,
         end_time=task.end_time,
         user_id=task.user_id,
+        is_deleted=task.is_deleted,
     )
     last_record_id = await database.execute(query)
     return {**task.model_dump(), "id": last_record_id}

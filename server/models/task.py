@@ -1,5 +1,14 @@
-from sqlalchemy import Column, Integer, String, DateTime as SQLDateTime, ForeignKey, func
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Boolean,
+    DateTime as SQLDateTime,
+    ForeignKey,
+    func,
+)
 from server.models.base import Base
+
 
 class Task(Base):
     __tablename__ = "tasks"
@@ -10,6 +19,7 @@ class Task(Base):
     end_time = Column(SQLDateTime, nullable=False)
     created_at = Column(SQLDateTime, server_default=func.now(), nullable=False)
     update_at = Column(SQLDateTime, onupdate=func.utc_timestamp(), nullable=True)
+    is_deleted = Column(Boolean, default=False)
     user_id = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
