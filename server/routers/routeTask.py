@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.post("/task", response_model=Task)
-async def create_task(
+async def post_task(
     task: TaskBase, current_user: TokenData = Depends(get_current_user)
 ):
     taskcreate = TaskCreate(
