@@ -92,6 +92,39 @@ async def delete_usertask(
     return TaskRead(**dict(latest_task))
 
 
+@router.post("/updatetask/{task_id}", response_model=TaskRead)
+async def update_task(
+    task_id: int, task: TaskBase, current_user: TokenData = Depends(get_current_user)
+):
+    query = select([TaskModel]).where(
+        (TaskModel.user_id == current_user.id)
+        & (TaskModel.id == task_id)
+        & (TaskModel.is_deleted == False)
+    )
+    result = await database.fetch_one(query)
+
+    # タスクが見つからない場合のエラーハンドリング
+    if not result:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    # Noneでないタスクフィールドだけを更新
+    update_data = {
+        key: value for key, value in task.dict().items() if value is not None
+    }
+
+    # タスクを更新
+    update_query = (
+        update(TaskModel.__table__).where(TaskModel.id == task_id).values(**update_data)
+    )
+    await database.execute(update_query)
+
+    # タスクの最新情報を再取得
+    latest_task = await database.fetch_one(query)
+
+    # SQLAlchemyのRowオブジェクトを辞書に変換してから、TaskReadモデルに渡す
+    return TaskRead(**dict(latest_task))
+
+
 @router.delete("/usertask/harddelete/{task_id}", status_code=204)
 async def harddelete_usertask(
     task_id: int, current_user: TokenData = Depends(get_current_user)
