@@ -59,8 +59,10 @@ services:
       - mysql
     networks:
       - step250_network
-    ports:
-      - ${PORT_PMA}:80
+    expose:
+      - 80
+    # ports:
+    #   - ${PORT_PMA}:80
     volumes:
         - ./phpmyadmin/sessions:/sessions
 
