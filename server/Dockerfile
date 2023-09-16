@@ -44,9 +44,8 @@ RUN if ! grep -q ":x:$MY_GID:" /etc/group; then groupadd -g $MY_GID appgroup; fi
 # パスワード無しでroot権限をappuserにも付与する。
 RUN usermod -aG sudo appuser
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-RUN mkdir /home/appuser/devcon 
-# && chown appuser:appgroup /home/appuser/devcon
-#USER appuser
+RUN mkdir /home/appuser/devcon && chown appuser:appgroup /home/appuser/devcon
+# USER appuser
 WORKDIR /home/appuser/devcon
 #ENTRYPOINT ["/bin/sh", "-c"]
 #CMD ["tail -f /dev/null"]
