@@ -1,0 +1,10 @@
+POST http://localhost/fast/register HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "haha@gmail.com",
+    "username": "tanaka",
+    "password1": "hahahaha",
+    "password2": "hahahaha"
+}

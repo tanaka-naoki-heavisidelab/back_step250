@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.security import OAuth2PasswordRequestForm
+from server.auth.oauth2 import OAuth2RefreshTokenBearer
+from fastapi.responses import JSONResponse
 from server.schemas.token import Token
 from datetime import timedelta
 from server.services.toAuth import (
@@ -28,12 +30,17 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    content = {"token_type": "bearer"}
+    response = JSONResponse(content=content)
+    response.set_cookie(key="access_token", value=access_token, httponly=True)
+    return response
+
+
+refresh_token_scheme = OAuth2RefreshTokenBearer()
 
 
 @router.post("/token_refresh", response_model=Token)
-async def refresh_access_token(refresh_token: str):
-    # async def refresh_access_token(refresh_token: str = Query(...)):
+async def refresh_access_token(refresh_token: str = Depends(refresh_token_scheme)):
     user = await get_current_user(refresh_token)
     if not user:
         raise HTTPException(
@@ -43,4 +50,7 @@ async def refresh_access_token(refresh_token: str):
         data={"sub": user.email},
         expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
     )
-    return {"access_token": new_access_token, "token_type": "bearer"}
+    content = {"token_type": "bearer"}
+    response = JSONResponse(content=content)
+    response.set_cookie(key="access_token", value=new_access_token, httponly=True)
+    return response

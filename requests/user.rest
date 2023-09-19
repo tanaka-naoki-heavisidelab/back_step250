@@ -1,0 +1,11 @@
+POST http://localhost/fast/token HTTP/1.1
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=&username=haha%40gmail.com&password=hahahaha&scope=&client_id=&client_secret=
+
+###
+
+GET http://localhost/fast/user HTTP/1.1
+Accept: application/json
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJoYWhhQGdtYWlsLmNvbSIsImV4cCI6MTY5NTA5MTIwNH0.Ptl8A478MD-dAfYxunzCj4c0J5FP9jrn_2B_E8ZZFW8
