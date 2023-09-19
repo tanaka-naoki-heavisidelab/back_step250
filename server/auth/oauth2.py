@@ -6,10 +6,11 @@ from fastapi import HTTPException
 from fastapi import status
 from typing import Optional
 from typing import Dict
-import logging
 
-# ロガーの設定
-logger = logging.getLogger(__name__)
+# import logging
+
+# # ロガーの設定
+# logger = logging.getLogger(__name__)
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
@@ -26,17 +27,12 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        logger.info("OAuth2PasswordBearerWithCookie called")  # この行を追加
         authorization: str = request.cookies.get(
             "access_token"
         )  # changed to accept access token from httpOnly Cookie
         authorization = "Bearer " + authorization
-        logger.info("access_token is " + str(authorization))
-
+        # logger.info("access_token is " + str(authorization))
         scheme, param = get_authorization_scheme_param(authorization)
-        logger.info("scheme is " + str(scheme))
-        logger.info("param is " + str(param))
-        logger.info("scheme and param is gotten!")
 
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
@@ -52,7 +48,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
 class OAuth2RefreshTokenBearer(OAuth2):
     def __call__(self, request: Request) -> Optional[str]:
-        refresh_token: str = request.cookies.get("refresh_token")
+        refresh_token: str = request.cookies.get("access_token")
         if not refresh_token:
             if self.auto_error:
                 raise HTTPException(

@@ -9,7 +9,6 @@ from sqlalchemy import select
 from server.schemas.token import TokenData
 from server.db.database import database
 from server.models.user import User as UserModel
-import logging
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -65,40 +64,7 @@ async def get_user(email: str):
     return result
 
 
-# async def get_current_user(token: str = Depends(oauth2_scheme)):
-#     credential_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         email: str = payload.get("sub")
-
-#         if email is None:
-#             raise credential_exception
-#         token_data = TokenData(email=email)
-
-#     except JWTError:
-#         raise credential_exception
-
-#     user = await get_user(email=token_data.email)
-#     if user is None:
-#         raise credential_exception
-#     return user
-
-# ログの設定
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-
-# logger インスタンスの作成
-logger = logging.getLogger(__name__)
-
-
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    logger.info("Entering get_current_user function")  # 関数が呼び出されたことを確認するためのログ
-
     credential_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -108,21 +74,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
 
-        logger.info(f"Decoded JWT payload: {payload}")  # ペイロードの中身をログに出力
-
         if email is None:
             raise credential_exception
         token_data = TokenData(email=email)
 
     except JWTError:
-        logger.error("JWT Error encountered while decoding token")  # エラーが発生した場合のログ
         raise credential_exception
 
     user = await get_user(email=token_data.email)
     if user is None:
-        logger.warning(
-            f"No user found with email: {token_data.email}"
-        )  # 該当のユーザーが見つからない場合のログ
         raise credential_exception
-
     return user
