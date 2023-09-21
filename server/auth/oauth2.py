@@ -28,9 +28,9 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        logger.info("     getting token at token setting")
+        logger.info("     1.cookie before get_current_user")
         authorization: str = request.cookies.get("access_token")
-        logger.info("     gotten token:" + str(authorization))
+        logger.info("     2.cookie:" + str(authorization))
         authorization = "Bearer " + authorization
         scheme, param = get_authorization_scheme_param(authorization)
 
@@ -48,9 +48,9 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
 class OAuth2RefreshTokenBearer(OAuth2):
     def __call__(self, request: Request) -> Optional[str]:
-        logger.info("     3.getting token at refresh_token setting")
+        logger.info("     3.cookie before token_refresh")
         refresh_token: str = request.cookies.get("access_token")
-        logger.info("     4.gotten token:" + str(refresh_token))
+        logger.info("     4.cookie:" + str(refresh_token))
         if not refresh_token:
             if self.auto_error:
                 raise HTTPException(
