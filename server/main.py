@@ -21,8 +21,8 @@ app = FastAPI(root_path="/fast", debug=True)
 # 名前解決できない。
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:3000"],
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
+    # allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
