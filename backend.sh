@@ -38,6 +38,6 @@ chown appuser:appgroup alembic.ini
 
 # start uvicorn server
 export PYTHONPATH=/home/appuser/devcon/server:$PYTHONPATH
-uvicorn server.main:app --reload --host 0.0.0.0 --port ${PORT_BACK} --log-level info
+uvicorn server.main:app --reload --host 0.0.0.0 --port ${PORT_BACK}
 
 #--log-levelはproductionでは不要

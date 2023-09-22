@@ -7,12 +7,6 @@ from fastapi import status
 from typing import Optional
 from typing import Dict
 
-# ロガーの設定
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
     def __init__(
@@ -28,9 +22,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        logger.info("     at token")
         authorization: str = request.cookies.get("access_token")
-        logger.info("     Recieved Cookie:" + str(authorization))
         authorization = "Bearer " + authorization
         scheme, param = get_authorization_scheme_param(authorization)
 
@@ -48,9 +40,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
 class OAuth2RefreshTokenBearer(OAuth2):
     def __call__(self, request: Request) -> Optional[str]:
-        logger.info("     at refresh_access_token")
         refresh_token: str = request.cookies.get("access_token")
-        logger.info("     Recieved Cookie:" + str(refresh_token))
         if not refresh_token:
             if self.auto_error:
                 raise HTTPException(
