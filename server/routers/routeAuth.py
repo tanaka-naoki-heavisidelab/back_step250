@@ -12,6 +12,12 @@ from server.services.toAuth import (
     get_current_user,
 )
 
+# ロガーの設定
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_MINUTES = 720
 router = APIRouter()
@@ -41,6 +47,7 @@ refresh_token_scheme = OAuth2RefreshTokenBearer()
 
 @router.post("/token_refresh", response_model=Token)
 async def refresh_access_token(refresh_token: str = Depends(refresh_token_scheme)):
+    logger.info("     3.refresh_access_token")
     user = await get_current_user(refresh_token)
     if not user:
         raise HTTPException(

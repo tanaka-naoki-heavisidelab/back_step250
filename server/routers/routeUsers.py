@@ -10,6 +10,12 @@ from server.models.user import User as UserModel
 from server.db.database import database
 from passlib.context import CryptContext
 
+# ロガーの設定
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 pwd_context = get_pwd_context()
 
@@ -45,6 +51,7 @@ async def create_user(
 
 @router.get("/user", response_model=UserRead)
 async def get_user(current_user: TokenData = Depends(get_current_user)):
+    logger.info("     3.get_user")
     # query = select([UserModel]).where(UserModel.id == current_user.id)
     query = select([UserModel]).where(UserModel.email == current_user.email)
     result = await database.fetch_one(query)
